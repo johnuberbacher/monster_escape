@@ -1,11 +1,17 @@
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:monster_escape/game/game.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Flame.util.fullScreen();
   Flame.util.setLandscape();
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    systemNavigationBarColor: Colors.transparent,
+  ));
+  // This removes the bottom navigation and fills the empty space
+  SystemChrome.setEnabledSystemUIOverlays([]);
   runApp(MyApp());
 }
 

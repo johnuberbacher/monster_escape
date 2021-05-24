@@ -1,9 +1,10 @@
 import 'package:flame/components/parallax_component.dart';
 import 'package:flame/game/base_game.dart';
+import 'package:flame/gestures.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:monster_escape/game/player.dart';
 
-class MainGame extends BaseGame {
+class MainGame extends BaseGame with TapDetector {
   late Player _player;
   late ParallaxComponent _parallaxComponent;
 
@@ -24,7 +25,12 @@ class MainGame extends BaseGame {
     );
 
     add(_parallaxComponent);
-    _player = Player();
     add(_player);
+  }
+
+  @override
+  void onTapDown(TapDownDetails details) {
+    super.onTapDown(details);
+    _player.playerJump();
   }
 }
