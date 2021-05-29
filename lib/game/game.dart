@@ -1,12 +1,16 @@
 import 'package:flame/components/parallax_component.dart';
+import 'package:flame/components/text_component.dart';
 import 'package:flame/game/base_game.dart';
 import 'package:flame/gestures.dart';
+import 'package:flame/position.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:monster_escape/game/player.dart';
 
 class MainGame extends BaseGame with TapDetector {
   late Player _player;
   late ParallaxComponent _parallaxComponent;
+  late TextComponent _scoreText;
+  late int score;
 
   MainGame() {
     _player = Player();
@@ -20,17 +24,37 @@ class MainGame extends BaseGame with TapDetector {
         ParallaxImage('backgrounds/bg1/plx-5.png'),
         ParallaxImage('backgrounds/bg1/plx-6.png', fill: LayerFill.none),
       ],
-      baseSpeed: Offset(100, 0),
+      baseSpeed: Offset(200, 0),
       layerDelta: Offset(20, 0),
     );
 
     add(_parallaxComponent);
     add(_player);
+
+    score = 0;
+
+    _scoreText = TextComponent(score.toString());
+    add(_scoreText);
+  }
+
+  @override
+  void resize(Size size) {
+    // TODO: implement resize
+    super.resize(size);
+    _scoreText.setByPosition(
+        Position(((size.width / 2) - (_scoreText.width / 2)), 0));
   }
 
   @override
   void onTapDown(TapDownDetails details) {
     super.onTapDown(details);
     _player.playerJump();
+  }
+
+  @override
+  void update(double t) {
+    super.update(t);
+    score += (60 * t).toInt();
+    _scoreText.text = score.toString();
   }
 }

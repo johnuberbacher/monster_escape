@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flame/components/animation_component.dart';
 import 'package:flame/animation.dart' as anim;
+import 'package:flame/components/text_component.dart';
 import 'package:flame/spritesheet.dart';
 import 'package:flutter/material.dart';
 
