@@ -1,8 +1,11 @@
+import 'dart:ui';
 import 'package:flame/components/parallax_component.dart';
 import 'package:flame/components/text_component.dart';
-import 'package:flame/game/base_game.dart';
+import 'package:flame/flame.dart';
+import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
 import 'package:flame/position.dart';
+import 'package:flame/text_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:monster_escape/game/player.dart';
 
@@ -14,7 +17,6 @@ class MainGame extends BaseGame with TapDetector {
 
   MainGame() {
     _player = Player();
-
     _parallaxComponent = ParallaxComponent(
       [
         ParallaxImage('backgrounds/bg1/plx-1.png'),
@@ -33,7 +35,14 @@ class MainGame extends BaseGame with TapDetector {
 
     score = 0;
 
-    _scoreText = TextComponent(score.toString());
+    _scoreText = TextComponent(
+      score.toString(),
+      config: TextConfig(
+        fontFamily: 'Squirk-RMvV',
+        fontSize: 30.0,
+        color: Color(0xFFFFFFFF),
+      ),
+    );
     add(_scoreText);
   }
 
@@ -42,7 +51,7 @@ class MainGame extends BaseGame with TapDetector {
     // TODO: implement resize
     super.resize(size);
     _scoreText.setByPosition(
-        Position(((size.width / 2) - (_scoreText.width / 2)), 0));
+        Position(((size.width / 2) - (_scoreText.width / 2)), 15));
   }
 
   @override
@@ -55,6 +64,7 @@ class MainGame extends BaseGame with TapDetector {
   void update(double t) {
     super.update(t);
     score += (60 * t).toInt();
-    _scoreText.text = score.toString();
+    _scoreText.text = (score.toString().replaceAllMapped(
+        new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => "${m[1]},"));
   }
 }
