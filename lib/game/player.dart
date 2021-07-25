@@ -3,36 +3,37 @@ import 'package:flame/components/animation_component.dart';
 import 'package:flame/animation.dart' as anim;
 import 'package:flame/spritesheet.dart';
 import 'package:flutter/material.dart';
+import 'package:monster_escape/util/constants.dart';
 
 class Player extends AnimationComponent {
   late anim.Animation _playerRunAnimation;
   late anim.Animation _playerHitAnimation;
-  double playerSpeedY = 0.0;
-  double playerMaxY = 0.0;
-  static const double gravity = 1000;
+  late anim.Animation _playerJumpAnimation;
 
   Player() : super.empty() {
     final playerSpriteSheet = SpriteSheet(
-      imageName: 'DinoSprites - doux.png',
-      textureWidth: 24,
-      textureHeight: 24,
-      columns: 24,
+      imageName: 'players/spritesheet.png',
+      textureWidth: 72,
+      textureHeight: 72,
+      columns: 14,
       rows: 1,
     );
     _playerRunAnimation =
-        playerSpriteSheet.createAnimation(0, from: 4, to: 10, stepTime: 0.1);
+        playerSpriteSheet.createAnimation(0, from: 6, to: 13, stepTime: 0.15);
     _playerHitAnimation =
-        playerSpriteSheet.createAnimation(0, from: 14, to: 16, stepTime: 0.1);
+        playerSpriteSheet.createAnimation(0, from: 0, to: 5, stepTime: 0.1);
+    _playerJumpAnimation =
+        playerSpriteSheet.createAnimation(0, from: 0, to: 5, stepTime: 0.3);
     animation = _playerRunAnimation;
   }
 
   @override
   void resize(Size size) {
     super.resize(size);
-    height = width = size.width / 10;
-    x = width;
-    // ground is 32px tall
-    y = size.height - 32 - height + 10;
+    // 8 = number of players that can fit horizontally on screen
+    this.height = this.width = size.width / 8;
+    this.x = this.width;
+    y = size.height - groundHeight - height + 10;
     playerMaxY = y;
   }
 
@@ -46,6 +47,7 @@ class Player extends AnimationComponent {
     if (checkFloor()) {
       y = playerMaxY;
       playerSpeedY = 0.0;
+      animation = _playerRunAnimation;
     }
   }
 
@@ -63,7 +65,8 @@ class Player extends AnimationComponent {
 
   void playerJump() {
     if (checkFloor()) {
-      playerSpeedY = -500;
+      animation = _playerJumpAnimation;
+      playerSpeedY = -550;
     }
   }
 }

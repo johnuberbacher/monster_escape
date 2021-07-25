@@ -7,11 +7,13 @@ import 'package:flame/gestures.dart';
 import 'package:flame/position.dart';
 import 'package:flame/text_config.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:monster_escape/game/enemy.dart';
 import 'package:monster_escape/game/player.dart';
 
 class MainGame extends BaseGame with TapDetector {
   late Player _player;
   late ParallaxComponent _parallaxComponent;
+  late ParallaxComponent _parallaxForeground;
   late TextComponent _scoreText;
   late int score;
 
@@ -24,7 +26,13 @@ class MainGame extends BaseGame with TapDetector {
         ParallaxImage('backgrounds/bg1/plx-3.png'),
         ParallaxImage('backgrounds/bg1/plx-4.png'),
         ParallaxImage('backgrounds/bg1/plx-5.png'),
-        ParallaxImage('backgrounds/bg1/plx-6.png', fill: LayerFill.none),
+      ],
+      baseSpeed: Offset(200, 0),
+      layerDelta: Offset(20, 0),
+    );
+    _parallaxForeground = ParallaxComponent(
+      [
+        ParallaxImage('backgrounds/bg1/plx-7.png', fill: LayerFill.none),
       ],
       baseSpeed: Offset(200, 0),
       layerDelta: Offset(20, 0),
@@ -32,6 +40,9 @@ class MainGame extends BaseGame with TapDetector {
 
     add(_parallaxComponent);
     add(_player);
+    var enemy = Enemy();
+    add(enemy);
+    add(_parallaxForeground);
 
     score = 0;
 
