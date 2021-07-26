@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:ui';
 import 'package:flame/components/animation_component.dart';
 import 'package:flame/animation.dart' as anim;
 import 'package:flame/spritesheet.dart';
+import 'package:flame/time.dart';
 import 'package:flutter/material.dart';
 import 'package:monster_escape/util/constants.dart';
 
@@ -9,22 +11,29 @@ class Player extends AnimationComponent {
   late anim.Animation _playerRunAnimation;
   late anim.Animation _playerHitAnimation;
   late anim.Animation _playerJumpAnimation;
+  late Size size;
+  late bool _isHit;
+  late Timer _timer;
 
   Player() : super.empty() {
     final playerSpriteSheet = SpriteSheet(
-      imageName: 'players/spritesheet.png',
+      imageName: 'players/player1.png',
       textureWidth: 72,
       textureHeight: 72,
-      columns: 14,
+      columns: 17,
       rows: 1,
     );
     _playerRunAnimation =
         playerSpriteSheet.createAnimation(0, from: 6, to: 13, stepTime: 0.15);
-    _playerHitAnimation =
-        playerSpriteSheet.createAnimation(0, from: 0, to: 5, stepTime: 0.1);
     _playerJumpAnimation =
         playerSpriteSheet.createAnimation(0, from: 0, to: 5, stepTime: 0.3);
-    animation = _playerRunAnimation;
+    _playerHitAnimation =
+        playerSpriteSheet.createAnimation(0, from: 14, to: 16, stepTime: 0.25);
+    this.animation = _playerRunAnimation;
+
+    this._timer = Timer(30, callback: () {
+      _playerRunAnimation;
+    });
   }
 
   @override
@@ -33,8 +42,9 @@ class Player extends AnimationComponent {
     // 8 = number of players that can fit horizontally on screen
     this.height = this.width = size.width / 8;
     this.x = this.width;
-    y = size.height - groundHeight - height + 10;
+    y = size.height - groundHeight - this.height;
     playerMaxY = y;
+    this.size = size;
   }
 
   @override
@@ -49,6 +59,8 @@ class Player extends AnimationComponent {
       playerSpeedY = 0.0;
       animation = _playerRunAnimation;
     }
+
+    _timer.update(t);
   }
 
   bool checkFloor() {
@@ -59,14 +71,16 @@ class Player extends AnimationComponent {
     animation = _playerRunAnimation;
   }
 
-  void playerHit() {
-    animation = _playerHitAnimation;
-  }
-
   void playerJump() {
     if (checkFloor()) {
       animation = _playerJumpAnimation;
-      playerSpeedY = -550;
+      playerSpeedY = -(playerMaxY * 2);
+      debugPrint(playerSpeedY.toString());
     }
+  }
+
+  void playerHit() {
+    this.animation = _playerHitAnimation;
+    _timer.start();
   }
 }

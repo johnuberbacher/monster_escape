@@ -5,20 +5,69 @@ import 'package:flame/spritesheet.dart';
 import 'package:flutter/material.dart';
 import 'package:monster_escape/util/constants.dart';
 
+enum EnemyType { Tyran1, Tyran2, Flying1 }
+
+class EnemyData {
+  final String imageName;
+  final int textureWidth;
+  final int textureHeight;
+  final int nColumns;
+  final int nRows;
+  final int speed;
+
+  EnemyData({
+    required this.imageName,
+    required this.textureWidth,
+    required this.textureHeight,
+    required this.nColumns,
+    required this.nRows,
+    required this.speed,
+  });
+}
+
 class Enemy extends AnimationComponent {
-  double enemySpeed = 200;
-  late anim.Animation _enemyRunAnimation;
-  Enemy() : super.empty() {
-    final enemySpriteSheet = SpriteSheet(
-      imageName: 'enemy/enemy1/spritesheet.png',
+  static Map<EnemyType, EnemyData> _enemyDetails = {
+    EnemyType.Tyran1: EnemyData(
+      imageName: 'enemy/enemy1.png',
       textureWidth: 128,
       textureHeight: 76,
-      columns: 8,
-      rows: 1,
+      nColumns: 8,
+      nRows: 1,
+      speed: 250,
+    ),
+    EnemyType.Tyran2: EnemyData(
+      imageName: 'enemy/enemy2.png',
+      textureWidth: 128,
+      textureHeight: 76,
+      nColumns: 8,
+      nRows: 1,
+      speed: 250,
+    ),
+    EnemyType.Flying1: EnemyData(
+      imageName: 'enemy/enemy3.png',
+      textureWidth: 128,
+      textureHeight: 76,
+      nColumns: 5,
+      nRows: 1,
+      speed: 250,
+    ),
+  };
+  EnemyData enemyData = _enemyDetails[EnemyType.Tyran1] as EnemyData;
+
+  Enemy(EnemyType enemyType) : super.empty() {
+    enemyData = _enemyDetails[enemyType] as EnemyData;
+
+    final enemySpriteSheet = SpriteSheet(
+      imageName: enemyData.imageName,
+      textureWidth: enemyData.textureWidth,
+      textureHeight: enemyData.textureHeight,
+      columns: enemyData.nColumns,
+      rows: enemyData.nRows,
     );
 
-    _enemyRunAnimation =
-        enemySpriteSheet.createAnimation(0, from: 0, to: 7, stepTime: 0.15);
+    late anim.Animation _enemyRunAnimation;
+    _enemyRunAnimation = enemySpriteSheet.createAnimation(0,
+        from: 0, to: (enemyData.nColumns - 1), stepTime: 0.15);
 
     this.animation = _enemyRunAnimation;
   }
@@ -27,18 +76,26 @@ class Enemy extends AnimationComponent {
   void resize(Size size) {
     super.resize(size);
 
-    this.height = size.width / 6;
-    this.width = size.width / 4;
+    double scaleWidth = (size.width / 5 / enemyData.textureWidth);
+    double scaleHeight = (size.width / 7 / enemyData.textureWidth);
+
+    this.height = enemyData.textureHeight * scaleWidth;
+    this.width = enemyData.textureWidth * scaleWidth;
+
     this.x = size.width + this.width;
 
-    // ground is 32px tall
-    // y = size.height - 32 - height + 10;
-    y = size.height - groundHeight - height;
+    y = size.height - groundHeight - this.height;
   }
 
   @override
   void update(double t) {
     super.update(t);
-    this.x -= enemySpeed * t;
+    this.x -= enemyData.speed * t;
+  }
+
+  @override
+  bool destroy() {
+    // Enemy can be destroyed once it goes off screen
+    return (this.x < (-this.width));
   }
 }

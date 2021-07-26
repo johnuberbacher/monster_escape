@@ -9,12 +9,14 @@ import 'package:flame/text_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:monster_escape/game/enemy.dart';
 import 'package:monster_escape/game/player.dart';
+import 'package:monster_escape/util/enemyEvents.dart';
 
 class MainGame extends BaseGame with TapDetector {
   late Player _player;
   late ParallaxComponent _parallaxComponent;
   late ParallaxComponent _parallaxForeground;
   late TextComponent _scoreText;
+  late EnemyEvents _enemyManager;
   late int score;
 
   MainGame() {
@@ -38,14 +40,15 @@ class MainGame extends BaseGame with TapDetector {
       layerDelta: Offset(20, 0),
     );
 
+    _enemyManager = EnemyEvents();
+    add(_enemyManager);
     add(_parallaxComponent);
-    add(_player);
-    var enemy = Enemy();
-    add(enemy);
     add(_parallaxForeground);
+    add(_player);
+    //var enemy = Enemy(EnemyType.Tyran2);
+    //add(enemy);
 
     score = 0;
-
     _scoreText = TextComponent(
       score.toString(),
       config: TextConfig(
@@ -59,7 +62,6 @@ class MainGame extends BaseGame with TapDetector {
 
   @override
   void resize(Size size) {
-    // TODO: implement resize
     super.resize(size);
     _scoreText.setByPosition(
         Position(((size.width / 2) - (_scoreText.width / 2)), 15));
@@ -77,5 +79,11 @@ class MainGame extends BaseGame with TapDetector {
     score += (60 * t).toInt();
     _scoreText.text = (score.toString().replaceAllMapped(
         new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => "${m[1]},"));
+
+    components.whereType<Enemy>().forEach((enemy) {
+      if (_player.distance(enemy) < 80) {
+        _player.playerHit();
+      }
+    });
   }
 }
