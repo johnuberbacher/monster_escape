@@ -1,12 +1,14 @@
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:monster_escape/game/game.dart';
+import 'package:monster_escape/util/audio_util.dart';
+import 'views/game.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Flame.util.fullScreen();
   Flame.util.setLandscape();
+  AudioUtil.instance.init(['track-1.ogg', 'jump.ogg']);
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     systemNavigationBarColor: Colors.transparent,
   ));
@@ -27,6 +29,7 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: const MyHomePage(title: 'Monster Escape'),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

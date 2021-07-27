@@ -1,5 +1,5 @@
-import 'dart:async';
 import 'dart:ui';
+import 'package:flame/anchor.dart';
 import 'package:flame/components/animation_component.dart';
 import 'package:flame/animation.dart' as anim;
 import 'package:flame/spritesheet.dart';
@@ -14,6 +14,7 @@ class Player extends AnimationComponent {
   late Size size;
   late bool _isHit;
   late Timer _timer;
+  late ValueNotifier<int> life;
 
   Player() : super.empty() {
     final playerSpriteSheet = SpriteSheet(
@@ -31,9 +32,13 @@ class Player extends AnimationComponent {
         playerSpriteSheet.createAnimation(0, from: 14, to: 16, stepTime: 0.25);
     this.animation = _playerRunAnimation;
 
-    this._timer = Timer(30, callback: () {
+    this._timer = Timer(1, callback: () {
       _playerRunAnimation;
     });
+
+    _isHit = false;
+    this.anchor = Anchor.center;
+    life = ValueNotifier(lives);
   }
 
   @override
@@ -42,7 +47,7 @@ class Player extends AnimationComponent {
     // 8 = number of players that can fit horizontally on screen
     this.height = this.width = size.width / 8;
     this.x = this.width;
-    y = size.height - groundHeight - this.height;
+    y = size.height - groundHeight - this.height / 2;
     playerMaxY = y;
     this.size = size;
   }
@@ -68,19 +73,25 @@ class Player extends AnimationComponent {
   }
 
   void playerRun() {
+    _isHit = false;
     animation = _playerRunAnimation;
   }
 
   void playerJump() {
     if (checkFloor()) {
       animation = _playerJumpAnimation;
-      playerSpeedY = -(playerMaxY * 2);
+      playerSpeedY = -WidgetsBinding.instance!.window.physicalSize.height / 2;
       debugPrint(playerSpeedY.toString());
     }
   }
 
   void playerHit() {
-    this.animation = _playerHitAnimation;
-    _timer.start();
+    if (!_isHit) {
+      this.animation = _playerHitAnimation;
+      life.value -= 1;
+      debugPrint("hit");
+      _timer.start();
+      _isHit = true;
+    }
   }
 }

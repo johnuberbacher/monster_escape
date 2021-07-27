@@ -1,4 +1,6 @@
+import 'dart:math';
 import 'dart:ui';
+import 'package:flame/anchor.dart';
 import 'package:flame/components/animation_component.dart';
 import 'package:flame/animation.dart' as anim;
 import 'package:flame/spritesheet.dart';
@@ -14,6 +16,7 @@ class EnemyData {
   final int nColumns;
   final int nRows;
   final int speed;
+  final bool flying;
 
   EnemyData({
     required this.imageName,
@@ -22,6 +25,7 @@ class EnemyData {
     required this.nColumns,
     required this.nRows,
     required this.speed,
+    required this.flying,
   });
 }
 
@@ -33,7 +37,8 @@ class Enemy extends AnimationComponent {
       textureHeight: 76,
       nColumns: 8,
       nRows: 1,
-      speed: 250,
+      speed: 400,
+      flying: false,
     ),
     EnemyType.Tyran2: EnemyData(
       imageName: 'enemy/enemy2.png',
@@ -41,7 +46,8 @@ class Enemy extends AnimationComponent {
       textureHeight: 76,
       nColumns: 8,
       nRows: 1,
-      speed: 250,
+      speed: 700,
+      flying: false,
     ),
     EnemyType.Flying1: EnemyData(
       imageName: 'enemy/enemy3.png',
@@ -49,10 +55,12 @@ class Enemy extends AnimationComponent {
       textureHeight: 76,
       nColumns: 5,
       nRows: 1,
-      speed: 250,
+      speed: 500,
+      flying: true,
     ),
   };
   EnemyData enemyData = _enemyDetails[EnemyType.Tyran1] as EnemyData;
+  static Random _random = Random();
 
   Enemy(EnemyType enemyType) : super.empty() {
     enemyData = _enemyDetails[enemyType] as EnemyData;
@@ -70,6 +78,7 @@ class Enemy extends AnimationComponent {
         from: 0, to: (enemyData.nColumns - 1), stepTime: 0.15);
 
     this.animation = _enemyRunAnimation;
+    this.anchor = Anchor.center;
   }
 
   @override
@@ -84,7 +93,11 @@ class Enemy extends AnimationComponent {
 
     this.x = size.width + this.width;
 
-    y = size.height - groundHeight - this.height;
+    y = size.height - groundHeight - this.height / 2;
+
+    if (enemyData.flying && _random.nextBool()) {
+      this.y -= this.height;
+    }
   }
 
   @override
