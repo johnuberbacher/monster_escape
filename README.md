@@ -1,5 +1,5 @@
 # Monster Escape!
- Monster Escape is a side scrolling jump 'n' run game designed with Flame and Flutter
+ Monster Escape is a side scrolling jump 'n' run game built using [Flutter](https://flutter.dev/) and [Flame-Engine](https://flame-engine.org/)
  
 ![](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white) ![](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white) ![Flame](https://img.shields.io/badge/Flame-%23FF4500.svg?style=for-the-badge&logo=Flame&logoColor=white)
 <p float="left">
