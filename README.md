@@ -14,3 +14,15 @@ flutter pub get
 
 flutter run
 ```
+
+
+
+### To-Do
+- [ ] Music
+- [ ] Sound Effects
+- [ ] Second playable character
+- [ ] Collectibles for extra points
+- [ ] Power ups/invincibility
+
+
+
