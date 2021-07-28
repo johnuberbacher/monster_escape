@@ -4,14 +4,14 @@ import 'package:flame/components/component.dart';
 import 'package:flame/components/mixins/has_game_ref.dart';
 import 'package:flame/time.dart';
 import 'package:monster_escape/game/enemy.dart';
-import '../views/game.dart';
+import '../game.dart';
 
-class EnemyEvents extends Component with HasGameRef<MainGame> {
+class EventManager extends Component with HasGameRef<MainGame> {
   Random _random = Random();
-  late Timer _timer = Timer(4, repeat: true, callback: () {});
+  late Timer _timer;
   int spawnRate = 0;
 
-  EnemyEvents() {
+  EventManager() {
     _timer = Timer(4, repeat: true, callback: () {
       spawnEnemy();
     });
@@ -44,7 +44,6 @@ class EnemyEvents extends Component with HasGameRef<MainGame> {
 
       // y = 4 / (1 + 0.1 * x)
       var newWaitTime = (4 / (1 + (0.1 * spawnRate)));
-
       _timer.stop();
       _timer = Timer(newWaitTime, repeat: true, callback: () {
         spawnEnemy();

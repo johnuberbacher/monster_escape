@@ -64,7 +64,6 @@ flutter:
     - assets/images/
     - assets/images/gui/
     - assets/images/backgrounds/
-    - assets/images/backgrounds/bg1/
     - assets/images/players/
     - assets/images/enemy/
     - assets/audio/

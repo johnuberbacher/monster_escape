@@ -34,6 +34,7 @@ class Player extends AnimationComponent {
 
     this._timer = Timer(1, callback: () {
       _playerRunAnimation;
+      _isHit = false;
     });
 
     _isHit = false;
@@ -62,7 +63,7 @@ class Player extends AnimationComponent {
     if (checkFloor()) {
       y = playerMaxY;
       playerSpeedY = 0.0;
-      animation = _playerRunAnimation;
+      this.animation = _playerRunAnimation;
     }
 
     _timer.update(t);
@@ -74,12 +75,12 @@ class Player extends AnimationComponent {
 
   void playerRun() {
     _isHit = false;
-    animation = _playerRunAnimation;
+    this.animation = _playerRunAnimation;
   }
 
   void playerJump() {
     if (checkFloor()) {
-      animation = _playerJumpAnimation;
+      this.animation = _playerJumpAnimation;
       playerSpeedY = -WidgetsBinding.instance!.window.physicalSize.height / 2;
       debugPrint(playerSpeedY.toString());
     }
@@ -87,9 +88,9 @@ class Player extends AnimationComponent {
 
   void playerHit() {
     if (!_isHit) {
+      debugPrint("hit");
       this.animation = _playerHitAnimation;
       life.value -= 1;
-      debugPrint("hit");
       _timer.start();
       _isHit = true;
     }

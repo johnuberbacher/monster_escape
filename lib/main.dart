@@ -1,8 +1,9 @@
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:monster_escape/views/main_menu.dart';
 import 'package:monster_escape/util/audio_util.dart';
-import 'views/game.dart';
+import 'game.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,33 +29,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const MyHomePage(title: 'Monster Escape'),
+      home: MainMenu(),
       debugShowCheckedModeBanner: false,
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  late MainGame game;
-
-  @override
-  void initState() {
-    super.initState();
-    game = MainGame();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: game.widget,
     );
   }
 }

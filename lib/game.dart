@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flame/components/parallax_component.dart';
 import 'package:flame/components/text_component.dart';
@@ -9,27 +10,31 @@ import 'package:flame/text_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:monster_escape/game/enemy.dart';
 import 'package:monster_escape/game/player.dart';
-import 'package:monster_escape/util/enemyEvents.dart';
+import 'package:monster_escape/util/enemy_manager.dart';
 import 'package:monster_escape/util/constants.dart';
+import 'package:monster_escape/widgets/pause_menu.dart';
+import 'package:monster_escape/widgets/game_over.dart';
 
 class MainGame extends BaseGame with TapDetector, HasWidgetsOverlay {
   late Player _player;
   late ParallaxComponent _parallaxComponent;
   late ParallaxComponent _parallaxForeground;
   late TextComponent _scoreText;
-  late EnemyEvents _enemyManager;
+  late EventManager _enemyManager;
   late double _elaspedTime = 0.0;
   late int score;
+  bool _isGameOver = false;
+  bool _isGamePaused = false;
 
   MainGame() {
     _player = Player();
     _parallaxComponent = ParallaxComponent(
       [
-        ParallaxImage('backgrounds/bg1/plx-1.png'),
-        ParallaxImage('backgrounds/bg1/plx-2.png'),
-        ParallaxImage('backgrounds/bg1/plx-3.png'),
-        ParallaxImage('backgrounds/bg1/plx-4.png'),
-        ParallaxImage('backgrounds/bg1/plx-5.png'),
+        ParallaxImage('backgrounds/plx-1-${Random().nextInt(2) + 1}.png'),
+        ParallaxImage('backgrounds/plx-2.png'),
+        ParallaxImage('backgrounds/plx-3.png'),
+        ParallaxImage('backgrounds/plx-4.png'),
+        ParallaxImage('backgrounds/plx-5.png'),
       ],
       baseSpeed: Offset(200, 0),
       layerDelta: Offset(20, 0),
@@ -42,7 +47,7 @@ class MainGame extends BaseGame with TapDetector, HasWidgetsOverlay {
       layerDelta: Offset(20, 0),
     );
 
-    _enemyManager = EnemyEvents();
+    _enemyManager = EventManager();
     add(_enemyManager);
     add(_parallaxComponent);
     add(_parallaxForeground);
@@ -91,7 +96,9 @@ class MainGame extends BaseGame with TapDetector, HasWidgetsOverlay {
   @override
   void onTapDown(TapDownDetails details) {
     super.onTapDown(details);
-    _player.playerJump();
+    if (!_isGameOver && !_isGamePaused) {
+      _player.playerJump();
+    }
   }
 
   @override
@@ -108,10 +115,14 @@ class MainGame extends BaseGame with TapDetector, HasWidgetsOverlay {
     //_scoreText.text = (score.toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => "${m[1]},"));
 
     components.whereType<Enemy>().forEach((enemy) {
-      if (_player.distance(enemy) < 72) {
+      if (_player.distance(enemy) < 70) {
         _player.playerHit();
       }
     });
+
+    if (_player.life.value <= 0) {
+      gameOver();
+    }
   }
 
   Widget _buildGUI() {
@@ -147,30 +158,26 @@ class MainGame extends BaseGame with TapDetector, HasWidgetsOverlay {
                 valueListenable: _player.life,
                 builder: (BuildContext context, value, Widget? child) {
                   final List<Widget> hearts = [];
-
                   for (int i = 0; i < lives; ++i) {
                     hearts.add(
-                      (i < (value as num))
-                          ? Container(
-                              margin: const EdgeInsets.only(
-                                right: 10.0,
-                              ),
-                              color: Colors.transparent,
-                              child: Image(
-                                image:
-                                    AssetImage('assets/images/gui/heart.png'),
-                                fit: BoxFit.contain,
-                              ),
-                              height: 30,
-                              width: 30,
-                            )
-                          : Container(
-                              height: 30,
-                            ),
+                      Container(
+                        margin: const EdgeInsets.only(
+                          right: 10.0,
+                        ),
+                        color: Colors.transparent,
+                        child: Image(
+                          image: (i < (value as num))
+                              ? AssetImage('assets/images/gui/heart.png')
+                              : AssetImage('assets/images/gui/deplete.png'),
+                          fit: BoxFit.contain,
+                        ),
+                        height: 30,
+                        width: 30,
+                      ),
                     );
                   }
                   return Row(
-                    children: hearts,
+                    children: hearts.reversed.toList(),
                   );
                 },
               ),
@@ -195,87 +202,51 @@ class MainGame extends BaseGame with TapDetector, HasWidgetsOverlay {
     );
   }
 
-  Widget _buildPauseMenu() {
-    return Container(
-      color: Colors.black.withOpacity(0.5),
-      height: WidgetsBinding.instance!.window.physicalSize.width,
-      width: WidgetsBinding.instance!.window.physicalSize.width,
-      child: Center(
-        child: Container(
-            width: 500,
-            height: 400,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/gui/bg.png'),
-                fit: BoxFit.contain,
-              ),
-            ),
-            margin: const EdgeInsets.symmetric(
-              vertical: 50.0,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.only(
-                    bottom: 30.0,
-                  ),
-                  child: Text(
-                    "PAUSED",
-                    style: TextStyle(
-                        fontFamily: 'Squirk-RMvV',
-                        fontSize: 80.0,
-                        color: Colors.white,
-                        shadows: [
-                          Shadow(
-                              // bottomLeft
-                              offset: Offset(-5, -5),
-                              color: Colors.black),
-                          Shadow(
-                              // bottomRight
-                              offset: Offset(5, -5),
-                              color: Colors.black),
-                          Shadow(
-                              // topRight
-                              offset: Offset(5, 5),
-                              color: Colors.black),
-                          Shadow(
-                              // topLeft
-                              offset: Offset(-5, 5),
-                              color: Colors.black),
-                        ]),
-                  ),
-                ),
-                Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () {
-                      resumeGame();
-                    },
-                    child: Container(
-                      color: Colors.transparent,
-                      child: Image(
-                        image: AssetImage('assets/images/gui/play.png'),
-                        fit: BoxFit.contain,
-                      ),
-                      height: 50,
-                      width: 50,
-                    ),
-                  ),
-                ),
-              ],
-            )),
-      ),
-    );
-  }
-
   void pauseGame() {
     pauseEngine();
-    addWidgetOverlay('PauseMenu', _buildPauseMenu());
+    if (!_isGameOver) {
+      _isGamePaused = true;
+      addWidgetOverlay(
+        'PauseMenu',
+        PauseMenu(
+          onResumePress: resumeGame,
+        ),
+      );
+    }
+  }
+
+  void gameOver() {
+    pauseEngine();
+    _isGameOver = true;
+    addWidgetOverlay(
+      'GameOver',
+      GameOver(
+        score: score,
+        onRestartPress: reset,
+      ),
+    );
+    // AudioManager.instance.pauseBgm();
   }
 
   void resumeGame() {
     removeWidgetOverlay('PauseMenu');
+    _isGamePaused = false;
     resumeEngine();
+  }
+
+  void reset() {
+    removeWidgetOverlay('GameOver');
+    debugPrint("here");
+    this.score = 0;
+    _player.life.value = lives;
+    _player.playerRun();
+    _enemyManager.reset();
+    components.whereType<Enemy>().forEach(
+      (enemy) {
+        this.markToRemove(enemy);
+      },
+    );
+    _isGameOver = false;
+    resumeGame();
   }
 }
