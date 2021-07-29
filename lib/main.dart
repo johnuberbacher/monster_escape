@@ -9,6 +9,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Flame.util.fullScreen();
   Flame.util.setLandscape();
+  SystemChrome.setEnabledSystemUIOverlays([]);
   AudioUtil.instance.init(['track-1.ogg', 'jump.ogg']);
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     systemNavigationBarColor: Colors.transparent,
