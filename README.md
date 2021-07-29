@@ -17,11 +17,21 @@
 git clone https://github.com/johnuberbacher/monster_escape.git
 
 flutter pub get
+```
 
+
+#### If using Dart 1
+
+```
 flutter run
 ```
 
 
+#### If using Dart 2
+
+```
+flutter run --no-sound-null-safety
+```
 
 ### To-Do
 - [ ] Music
