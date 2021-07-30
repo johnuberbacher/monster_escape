@@ -46,7 +46,7 @@ class Enemy extends AnimationComponent {
       textureHeight: 76,
       nColumns: 8,
       nRows: 1,
-      speed: 700,
+      speed: 600,
       flying: false,
     ),
     EnemyType.Flying1: EnemyData(
@@ -56,6 +56,15 @@ class Enemy extends AnimationComponent {
       nColumns: 5,
       nRows: 1,
       speed: 500,
+      flying: true,
+    ),
+    EnemyType.Flying1: EnemyData(
+      imageName: 'enemy/enemy4.png',
+      textureWidth: 128,
+      textureHeight: 76,
+      nColumns: 5,
+      nRows: 1,
+      speed: 800,
       flying: true,
     ),
   };
