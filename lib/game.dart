@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'dart:math';
+import 'package:flame/audio_pool.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/components/parallax_component.dart';
 import 'package:flame/components/text_component.dart';
@@ -25,6 +26,7 @@ class MainGame extends BaseGame with TapDetector, HasWidgetsOverlay {
   late int score;
   bool _isGameOver = false;
   bool _isGamePaused = false;
+  late AudioPool pool;
 
   MainGame() {
     _player = Player();
@@ -35,13 +37,14 @@ class MainGame extends BaseGame with TapDetector, HasWidgetsOverlay {
         ParallaxImage('backgrounds/plx-3.png'),
         ParallaxImage('backgrounds/plx-4.png'),
         ParallaxImage('backgrounds/plx-5.png'),
+        //ParallaxImage('backgrounds/plx-6.png', fill: LayerFill.none),
       ],
       baseSpeed: Offset(200, 0),
       layerDelta: Offset(20, 0),
     );
     _parallaxForeground = ParallaxComponent(
       [
-        ParallaxImage('backgrounds/bg1/plx-7.png', fill: LayerFill.none),
+        ParallaxImage('backgrounds/plx-7.png', fill: LayerFill.none),
       ],
       baseSpeed: Offset(200, 0),
       layerDelta: Offset(20, 0),
@@ -54,7 +57,6 @@ class MainGame extends BaseGame with TapDetector, HasWidgetsOverlay {
     add(_player);
     //var enemy = Enemy(EnemyType.Tyran2);
     //add(enemy);
-
     score = 0;
     _scoreText = TextComponent(
       score.toString(),
@@ -65,7 +67,7 @@ class MainGame extends BaseGame with TapDetector, HasWidgetsOverlay {
       ),
     );
     add(_scoreText);
-
+    addWidgetOverlay('GUI', _buildGUI());
     @override
     void lifecycleStateChange(AppLifecycleState state) {
       switch (state) {
@@ -82,8 +84,6 @@ class MainGame extends BaseGame with TapDetector, HasWidgetsOverlay {
           break;
       }
     }
-
-    addWidgetOverlay('GUI', _buildGUI());
   }
 
   @override

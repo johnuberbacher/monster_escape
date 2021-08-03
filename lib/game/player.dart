@@ -6,6 +6,7 @@ import 'package:flame/spritesheet.dart';
 import 'package:flame/time.dart';
 import 'package:flutter/material.dart';
 import 'package:monster_escape/util/constants.dart';
+import 'package:flame/flame_audio.dart';
 
 class Player extends AnimationComponent {
   late anim.Animation _playerRunAnimation;
@@ -80,6 +81,7 @@ class Player extends AnimationComponent {
 
   void playerJump() {
     if (checkFloor()) {
+      FlameAudio().audioCache.play('sfx/jump.ogg', volume: 1.0);
       this.animation = _playerJumpAnimation;
       playerSpeedY = -WidgetsBinding.instance!.window.physicalSize.height / 2;
       debugPrint(playerSpeedY.toString());
@@ -88,7 +90,7 @@ class Player extends AnimationComponent {
 
   void playerHit() {
     if (!_isHit) {
-      debugPrint("hit");
+      FlameAudio().audioCache.play('sfx/damage.ogg', volume: 1.0);
       this.animation = _playerHitAnimation;
       life.value -= 1;
       _timer.start();
