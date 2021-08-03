@@ -34,8 +34,8 @@ flutter run --no-sound-null-safety
 ```
 
 ### To-Do
-- [ ] Music
-- [ ] Sound Effects
+- [x] Music
+- [x] Sound Effects
 - [ ] Second playable character
 - [ ] Collectibles for extra points
 - [ ] Power ups/invincibility
